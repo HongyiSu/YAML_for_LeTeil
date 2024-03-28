@@ -1,0 +1,37 @@
+!EvalModel  
+parameters: [b_xx, b_yy, b_zz, b_xy, b_yz, b_xz]
+model: !Switch
+  [b_xx, b_yy, b_zz, b_xy, b_yz, b_xz]: !EvalModel
+    parameters: [sig_zz, S]
+    model: !Any
+      map: !AffineMap
+        matrix:
+          depth: [0.0, 0.0, 1.0]
+        translation:
+          depth: 0
+        components: !Any
+          - !ASAGI
+              file: le-teil_stress_seissol_f4.nc
+              parameters: [S, sig_zz]
+              var: data
+              interpolation: nearest
+          - !ConstantMap
+            map:
+              S: 1.0
+              sig_zz: 10000000.0
+    components: !AndersonianStress
+      constants:   
+        mu_d:      0.2
+        mu_s:      0.6
+        SH_max:    0.0
+        cohesion:  0.0
+        s2ratio:   0.4
+        S_v: 3
+components: !FunctionMap
+  map:
+    s_xx:     return b_xx;
+    s_yy:     return b_yy;
+    s_zz:     return b_zz;
+    s_xy:     return b_xy;
+    s_yz:     return b_yz;
+    s_xz:     return b_xz;

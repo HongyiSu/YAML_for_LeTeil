@@ -1,0 +1,55 @@
+!EvalModel  
+parameters: [b_zz, b_xx, b_yy, b_xy, b_yz, b_xz]
+model: !Switch 
+  [b_xx, b_yy, b_zz, b_xy, b_yz, b_xz]: !EvalModel
+    parameters: [sig_zz, S]
+    model: !FunctionMap
+      map:
+        sig_zz: |
+          sz = 0.0;
+          if (z >= -600.0) {
+            sz = -2000.0*1.0*9.8*z;
+          } else {
+            if (z >= -1200.0) {
+              sz = 2000.0*1.0*9.8*600.0 - (z+600)*1.0*9.8*2500.0;
+            } else {
+                if (z >= -1420.0) {
+                  sz = (1200-600)*1.0*9.8*2500.0 + 2000.0*1.0*9.8*600.0 - (z+1420)*1.0*9.8*2200.0;
+                 } else {
+                     if (z >= -2200.0) {
+                      sz = (1200-600)*1.0*9.8*2500.0 + 2000.0*1.0*9.8*600.0 + (1420-1200)*1.0*9.8*2200.0 - (z+2200)*1.0*9.8*2400.0;
+                     } else {
+                          sz = (1200-600)*1.0*9.8*2500.0 + 2000.0*1.0*9.8*600.0 + (1420-1200)*1.0*9.8*2200.0 +(2200-1420)*1.0*9.8*2400.0 - (z+2200)*1.0*9.8*2500.0;
+                  }
+               }
+             }
+          }
+          return sz;
+        S: |
+          fit = 0.0;           
+          if (z >= -500.0) {
+            fit = 0.53447*z - 0.69779;
+          } else {
+            if (z >= -1000.0) {
+              fit = 0.86474*z - 1.4134;
+            } else {
+               fit = -100000000;
+            }
+          }
+          return fit;
+    components: !AndersonianStress
+      constants:
+        mu_d:      0.2
+        mu_s:      0.6
+        SH_max:    0.0
+        cohesion:  0.0
+        s2ratio:   0.5
+        S_v: 3
+components: !FunctionMap
+  map:
+    s_xx:     return b_xx;
+    s_yy:     return b_yy;
+    s_zz:     return b_zz;
+    s_xy:     return b_xy;
+    s_yz:     return b_yz;
+    s_xz:     return b_xz;
