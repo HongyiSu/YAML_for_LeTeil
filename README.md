@@ -3,6 +3,7 @@ The YAML file show different ways to load S (as well as many other parameters) i
 With ASAGI: 
 
 stress_field_aochi58_ASAGI.yaml
+le-teil_stress_seissol_f4.nc (netCDF file stored sig_zz and S)
 
 
 With built-in FunctionMAP: 
