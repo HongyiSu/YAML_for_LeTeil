@@ -1,0 +1,45 @@
+!Switch
+[mu_s, mu_d, cohesion]: !IdentityMap
+  components:
+    - !SphericalDomainFilter #0.000000,-681.877973,-1050.000000
+      radius: 1000.000000
+      centre:
+        x:  49.723000
+        y: -648.912000
+        z: -999.237000
+      components: !ConstantMap
+        map:
+          mu_s:        0.600000
+          mu_d:        0.200000
+          cohesion:    0.0
+    - !ConstantMap
+      map:
+        mu_s:        0.600000
+        mu_d:        0.200000
+        cohesion: -10000000.0
+[d_c]: !FunctionMap
+  map:
+    d_c: |
+      xc = 49.723000;
+      yc = -648.912000;
+      zc = -999.237000;
+      r = sqrt(pow(x - xc, 2.0) + pow(y - yc, 2.0) + pow(z - zc, 2.0));
+      r_crit = 1000.0;
+      if (r <= r_crit) {
+        return 0.01+0.00004*r;
+      }
+      return 0.05;
+[forced_rupture_time]: !FunctionMap
+  map:
+    forced_rupture_time: |
+      xc = 49.723000;
+      yc = -648.912000;
+      zc = -999.237000;
+      r = sqrt(pow(x - xc, 2.0) + pow(y - yc, 2.0) + pow(z - zc, 2.0));
+      r_crit = 300.000000;
+      Vs = 300.000000;
+      if (r <= r_crit) {
+        return r/(0.7*Vs)+(0.081*r_crit/(0.7*Vs))*(1.0/(1.0-pow(r/r_crit, 2.0))-1.0);
+      }
+      return 1000000000.0;
+[s_xx, s_yy, s_zz, s_xy, s_yz, s_xz]: !Include stress_field_aochi_S_0.2.yaml

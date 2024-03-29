@@ -1,0 +1,32 @@
+!EvalModel  
+parameters: [b_xx, b_yy, b_zz, b_xy, b_yz, b_xz]
+model: !Switch
+  [b_xx, b_yy, b_zz, b_xy, b_yz, b_xz]: !EvalModel
+    parameters: [sig_zz,S]
+    model: !FunctionMap
+      map:
+        sig_zz: |
+          return -2300.0*1.0*9.8*z;  
+        S: |
+          if (z >= -1000) {
+            S = 0.2;
+          } else {
+            S = -100000000; 
+          }
+          return S;
+    components: !AndersonianStress
+      constants:
+        mu_d:      0.2
+        mu_s:      0.6
+        SH_max:    0.0
+        cohesion:  0.0
+        s2ratio:   0.4
+        S_v: 3
+components: !FunctionMap
+  map:
+    s_xx:     return b_xx;
+    s_yy:     return b_yy;
+    s_zz:     return b_zz;
+    s_xy:     return b_xy;
+    s_yz:     return b_yz;
+    s_xz:     return b_xz;
